@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      //   console.log("Start");
+      //   console.log("middle");
+      //   for (let i = 0; i < 1000; i++) {
+      //     console.log(i);
+      //   }
+      //   console.log("end");
+
+      //   console.log("Start");
+      //   setTimeout(() => {
+      //     for (let i = 0; i < 100; i++) {
+      //       console.log(i);
+      //     }
+      //   }, 2000);
+      //   console.log("middle");
+      //   console.log("end");
+
+      //   let data = fetch("https://jsonplaceholder.typicode.com/posts");
+      //   //   console.log(data); // promise in pending state
+      //   data
+      //     .then((payload) => {
+      //       // then block is used to handle successful promise(resolved)
+      //       //   console.log(payload); // response object
+      //       let dataJson = payload.json(); // promise
+      //       //   console.log(dataJson);
+      //       dataJson
+      //         .then((value) => {
+      //           console.log(value);
+      //         })
+      //         .catch((error) => {
+      //           console.log(error);
+      //         });
+      //     })
+      //     .catch((error) => {
+      //       // catch is used to handle either error or rejected state
+      //       console.log(error);
+      //     });
+
+      async function fetchAPI() {
+        let data = await fetch("https://jsonplaceholder.typicode.com/posts");
+        // console.log(data); // response object
+        let jsonData = await data.json();
+        console.log(jsonData);
+      }
+      fetchAPI();
+    </script>
+  </body>
+</html>
