@@ -17,3 +17,5 @@ console.log("end");
 
 //! to execute any js file using nodeJS type command
 //? node filename.js ==> extension is not mandatory.
+
+db.emp.find({ hireDate: { $gt: new Date("1-1-1981") } });

@@ -164,7 +164,7 @@ http
   .createServer((req, res) => {
     // console.log(req.url);
     //! home page
-    if (req.url === "/") {
+    if (req.url === "/home") {
       // res.end("this is home page");
       // pipe() ==> source.pipe(destination)
       res.writeHead(200, "Ok", { "content-type": "text/html" });
