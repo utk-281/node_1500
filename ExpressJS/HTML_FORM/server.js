@@ -11,7 +11,7 @@ let connectDB = async () => {
 
 let app = express();
 
-app.use(express.urlencoded({ extended: true })); // todo
+app.use(express.urlencoded({ extended: true })); // middleware
 
 //! home page
 app.get("/", (req, res) => {
@@ -39,23 +39,17 @@ app.post("/abc", async (req, res) => {
   //! use the same endpoint in the form action
   //! set form method to "post"
   //! provide values to name attribute in the form
-  //   console.log(req.body);
-  //? { userEmail: 'abc@gmail.com', userName: 'abc', userPassword: '123456' }
+  console.log(req.body);
+  let { a, b, c } = req.body;
+  // console.log(userEmail, userName, userPassword);
 
-  //   let values = req.body;
-  //   console.log(values);
-
-  let { userEmail, userName, userPassword } = req.body;
-  //   console.log(userEmail, userPassword, userName);
-  fs.appendFileSync(
-    "./data.txt",
-    `name: ${userName}, email: ${userEmail}, password: ${userPassword},\n`
-  );
+  fs.appendFileSync("./data.txt", `${a}, ${b}, ${c}\n`);
 
   let myCollection = await connectDB();
-  myCollection.insertOne({ userEmail, userName, userPassword });
+  myCollection.insertOne({ a, b, c });
+  // myCollection.insertOne(req.body);
 
-  res.send(`user with the email: ${userEmail} has registered successfully`);
+  res.send(`data has been saved ${a}`);
 });
 
 app.listen(9000, (err) => {
@@ -66,3 +60,7 @@ app.listen(9000, (err) => {
 //! in json file, default script command to run the file is "start" --> npm start
 //! if we are writing command other than "start" then we have to type --> npm run command-name
 // example --> npm run abc
+
+// http://localhost:9000/abc
+
+//! MVC structure
