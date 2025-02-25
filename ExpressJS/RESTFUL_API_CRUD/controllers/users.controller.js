@@ -10,17 +10,54 @@ let createUser = async (req, res) => {
 };
 
 //! fetch all users
-let fetchAllUsers = (req, res) => {};
+let fetchAllUsers = async (req, res) => {
+  let payload = await USER_SCHEMA.find();
+  res.json({ success: true, message: "users fetched", payload });
+};
 
 //! fetch single user
-let fetchUser = (req, res) => {};
+let fetchUser = async (req, res) => {
+  // console.log(req.url);
+  //? /user/67bc4de7d6e027e460580ce0
+  // console.log(req.params);
+  // { id: '67bc4de7d6e027e460580ce0' }
+  let { id } = req.params;
+
+  let user = await USER_SCHEMA.findOne({ _id: id });
+  res.json({ success: true, message: "user details fetched", user });
+};
 
 //! update user
-let updateUser = (req, res) => {};
+let updateUser = async (req, res) => {
+  let { id } = req.params;
+
+  let updatedUser = await USER_SCHEMA.updateOne(
+    { _id: id },
+    {
+      $set: {
+        name: req.body.name,
+        email: req.body.email,
+        password: req.body.password,
+        phoneNumber: req.body.phoneNumber,
+      },
+    }
+  );
+
+  res.json({ success: true, message: "user updated", updatedUser });
+};
 
 //! delete user
-let deleteUser = (req, res) => {};
+let deleteUser = async (req, res) => {
+  let { id } = req.params;
+  let user = await USER_SCHEMA.deleteOne({ _id: id });
+
+  res.json({ success: true, message: "user deleted", user });
+};
 
 module.exports = {
   createUser,
+  fetchAllUsers,
+  fetchUser,
+  updateUser,
+  deleteUser,
 };
