@@ -1,7 +1,7 @@
 let mongoose = require("mongoose");
 
 let connectDB = async () => {
-  mongoose.connect("mongodb://localhost:27017/CRUD_API");
+  mongoose.connect(process.env.MONGODB_URL);
   console.log("Database Connected");
 };
 
