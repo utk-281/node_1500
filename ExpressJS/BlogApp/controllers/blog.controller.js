@@ -43,3 +43,28 @@ exports.fetchOneBlog = asyncHandler(async (req, res, next) => {
     blog,
   });
 });
+
+exports.deleteBlog = asyncHandler(async (req, res) => {
+  // let blog = await BLOG_SCHEMA.findById(req.params.id);
+  // if (!blog) throw new ErrorHandler("no blog found", 404);
+
+  let deletedBlog = await BLOG_SCHEMA.findByIdAndDelete(req.params.id);
+  if (!deletedBlog) throw new ErrorHandler("no blog found", 404);
+
+  res.status(200).json({
+    success: true,
+    message: "blog deleted successfully",
+    deletedBlog,
+  });
+});
+
+exports.updateBlog = asyncHandler(async (req, res) => {
+  let updateBlog = await BLOG_SCHEMA.findByIdAndUpdate(req.params.id, req.body, { new: true });
+  if (!updateBlog) throw new ErrorHandler("no blog found", 404);
+
+  res.status(200).json({
+    success: true,
+    message: "blog updated successfully",
+    updateBlog,
+  });
+});

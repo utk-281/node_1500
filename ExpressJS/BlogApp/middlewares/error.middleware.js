@@ -8,10 +8,14 @@ exports.error = (err, req, res, next) => {
     err.statusCode = 400;
   }
 
-  //! cast error
+  //! duplicate key error
+  if (err.code === 11000) {
+    err.statusCode = 409;
+    err.message = `${Object.values(err.keyValue).map((ele) => ele)} already present`;
+  }
+
   if (err.name === "CastError") {
-    err.statusCode = 400;
-    err.message = "Invalid ObjectId, pass the correct ObjectId";
+    (err.statusCode = 400), (err.message = "Invalid Mongodb Id");
   }
 
   //! global error handler
@@ -21,6 +25,6 @@ exports.error = (err, req, res, next) => {
   res.status(err.statusCode).json({
     success: false,
     message: err.message,
-    errObj: err,
+    // errObj: err,
   });
 };
