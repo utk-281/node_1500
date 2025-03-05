@@ -14,7 +14,9 @@ const blogSchema = new Schema(
       trim: true,
       lowercase: true,
     },
-    //todo ==> createdBy: {},
+    //todo ==> createdBy: {
+    // type: ObjectId,
+    // },
   },
   { timestamps: true }
 );

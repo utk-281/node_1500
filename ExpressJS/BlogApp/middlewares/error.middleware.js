@@ -15,7 +15,7 @@ exports.error = (err, req, res, next) => {
   }
 
   if (err.name === "CastError") {
-    (err.statusCode = 400), (err.message = "Invalid Mongodb Id");
+    (err.statusCode = 400), (err.message = `invalid ${Object.values(err.path)}`);
   }
 
   //! global error handler
@@ -25,6 +25,6 @@ exports.error = (err, req, res, next) => {
   res.status(err.statusCode).json({
     success: false,
     message: err.message,
-    // errObj: err,
+    errObj: err,
   });
 };
