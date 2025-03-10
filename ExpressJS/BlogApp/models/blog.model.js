@@ -6,7 +6,6 @@ const blogSchema = new Schema(
       type: String,
       required: true,
       trim: true,
-      unique: true,
     },
     description: {
       type: String,
@@ -14,9 +13,10 @@ const blogSchema = new Schema(
       trim: true,
       lowercase: true,
     },
-    //todo ==> createdBy: {
-    // type: ObjectId,
-    // },
+    author: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
   { timestamps: true }
 );

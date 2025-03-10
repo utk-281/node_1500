@@ -2,6 +2,8 @@ const express = require("express");
 const { PORT } = require("./config");
 const { connectDB } = require("./config/database");
 const { error } = require("./middlewares/error.middleware");
+const cors = require("cors");
+const morgan = require("morgan");
 
 const blogRoutes = require("./routes/blog.routes");
 const userRoutes = require("./routes/user.routes");
@@ -12,6 +14,9 @@ const app = express();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cors());
+app.use(morgan("dev"));
+// cross origin resource sharing
 
 app.use("/v1/blogs", blogRoutes);
 // http://localhost:9000/v1/blogs/add
