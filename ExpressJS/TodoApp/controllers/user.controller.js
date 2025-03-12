@@ -1,6 +1,7 @@
 const userModel = require("../models/user.model");
 const asyncHandler = require("express-async-handler");
-const ErrorHandler = require("../utils/errorHandler");
+const ErrorHandler = require("../utils/errorHandler.utils");
+const { generateToken } = require("../utils/jwt.utils");
 
 exports.registerUser = asyncHandler(async (req, res) => {
   //! totalNumberOfTasks ==> it should be updated automatically every time a user creates/deletes a task
@@ -25,13 +26,25 @@ exports.loginUser = asyncHandler(async (req, res) => {
   let { email, password } = req.body;
 
   let existingUser = await userModel.findOne({ email });
-  console.log(existingUser);
+  console.log(existingUser); // {name, age,........., password}
 
   if (!existingUser)
     throw new ErrorHandler(400, "User with this email not found. Please register first.");
 
   let isMatch = await existingUser.verifyPassword(password);
+  //{name, age,........., password}.verifyPassword(123456)
   if (!isMatch) throw new ErrorHandler(400, "Invalid credentials");
 
-  res.status(200).json({ success: true, message: "User logged in successfully" });
+  let token = await generateToken(existingUser._id);
+  // console.log(token);
+
+  res.cookie("cookieName", token, {
+    maxAge: 1 * 60 * 60 * 1000,
+  });
+  res.status(200).json({ success: true, message: "User logged in successfully", token });
+});
+
+exports.logoutUser = asyncHandler(async (req, res) => {
+  res.clearCookie("cookieName", "", { maxAge: 1 });
+  res.status(200).json({ success: true, message: "User logged out successfully" });
 });

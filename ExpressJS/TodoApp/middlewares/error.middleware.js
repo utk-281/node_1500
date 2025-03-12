@@ -1,4 +1,4 @@
-const ErrorHandler = require("../utils/errorHandler");
+const ErrorHandler = require("../utils/errorHandler.utils");
 
 exports.error = (err, req, res, next) => {
   //! validation error
