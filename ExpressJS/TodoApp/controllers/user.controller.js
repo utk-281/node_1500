@@ -48,3 +48,5 @@ exports.logoutUser = asyncHandler(async (req, res) => {
   res.clearCookie("cookieName", "", { maxAge: 1 });
   res.status(200).json({ success: true, message: "User logged out successfully" });
 });
+
+function sum(a, b) {}
