@@ -19,5 +19,6 @@ exports.error = (err, req, res, next) => {
     success: false,
     message: err.message,
     errObject: err,
+    lineNo: err.stack,
   });
 };

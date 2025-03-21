@@ -6,8 +6,12 @@ const userModel = require("../models/user.model");
 
 exports.authenticate = asyncHandler(async (req, res, next) => {
   //! checking the cookie
-  let cookie = req.cookies.cookieName;
-  if (!cookie) throw new ErrorHandler(401, "PLease login to access this resource");
+  let cookie = req?.cookies?.cookieName;
+
+  console.log(cookie);
+
+  if (!cookie || cookie === null)
+    throw new ErrorHandler(401, "PLease login to access this resource");
 
   //! decrypting the cookie
   let decodedCookie = jwt.verify(cookie, JWT_SECRET);
@@ -15,6 +19,9 @@ exports.authenticate = asyncHandler(async (req, res, next) => {
 
   //! finding the user based on id
   let myUser = await userModel.findById(decodedCookie.id);
+
+  if (!myUser) throw new ErrorHandler(400, "please login again");
+
   req.user = myUser;
   next();
 });

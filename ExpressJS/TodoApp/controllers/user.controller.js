@@ -2,19 +2,30 @@ const userModel = require("../models/user.model");
 const asyncHandler = require("express-async-handler");
 const ErrorHandler = require("../utils/errorHandler.utils");
 const { generateToken } = require("../utils/jwt.utils");
+const uploadOnCloudinary = require("../utils/uploadOnCloudinary");
 
 exports.registerUser = asyncHandler(async (req, res) => {
-  //! totalNumberOfTasks ==> it should be updated automatically every time a user creates/deletes a task
   //! profilePicture ==> this is nor included in req.body
+
+  // console.log(req.file);
+
   let { name, email, password, role } = req.body;
-  // {}
 
   let existingUser = await userModel.findOne({ email });
   if (existingUser) {
     throw new ErrorHandler(409, "User already exists with this email. Please login instead.");
   }
 
-  let newUser = await userModel.create({ name, email, password, role });
+  let uploadedResponse = await uploadOnCloudinary(req?.file?.path);
+  // console.log(uploadedResponse);
+
+  let newUser = await userModel.create({
+    name,
+    email,
+    password,
+    role,
+    profilePicture: uploadedResponse?.secure_url,
+  });
   res.status(201).json({
     success: true,
     message: "User registered successfully",
@@ -49,4 +60,25 @@ exports.logoutUser = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, message: "User logged out successfully" });
 });
 
-function sum(a, b) {}
+exports.updateUserProfile = asyncHandler(async (req, res) => {
+  let user = await userModel.findById(req.user._id);
+
+  console.log(user);
+
+  user.name = req.body.name || user.name;
+  user.email = req.body.email || user.email;
+  user.password = req.body.password || user.password;
+  user.role = req.body.role || user.role;
+
+  await user.save();
+  console.log(user);
+  res.status(200).json({ success: true, message: "user updated successfully", user });
+});
+
+exports.deleteUserPicture = asyncHandler(async (req, res) => {});
+
+exports.getCurrentUser = asyncHandler(async (req, res) => {});
+
+exports.deleteUserProfile = asyncHandler(async (req, res) => {});
+
+exports.updateProfilePicture = asyncHandler(async (req, res) => {});

@@ -38,7 +38,10 @@ const userSchema = new Schema(
 
 //! password hashing ==> done with the help of bcrypt module
 //? pre hook
-userSchema.pre("save", async function () {
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    next();
+  }
   let salt = await bcrypt.genSalt(12); // generating a random string of size 12
   let hashedPassword = await bcrypt.hash(this.password, salt); // hashing the password with the salt using has()
   this.password = hashedPassword;
