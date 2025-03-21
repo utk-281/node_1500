@@ -2,7 +2,7 @@ const userModel = require("../models/user.model");
 const asyncHandler = require("express-async-handler");
 const ErrorHandler = require("../utils/errorHandler.utils");
 const { generateToken } = require("../utils/jwt.utils");
-const uploadOnCloudinary = require("../utils/uploadOnCloudinary");
+const { uploadOnCloudinary, deleteFromCloudinary } = require("../utils/uploadOnCloudinary");
 
 exports.registerUser = asyncHandler(async (req, res) => {
   //! profilePicture ==> this is nor included in req.body
@@ -18,6 +18,16 @@ exports.registerUser = asyncHandler(async (req, res) => {
 
   let uploadedResponse = await uploadOnCloudinary(req?.file?.path);
   // console.log(uploadedResponse);
+
+  // let newUser = new userModel({
+  //   name,
+  //   email,
+  //   password,
+  //   role,
+  //   profilePicture: uploadedResponse?.secure_url,
+  // });
+
+  // await newUser.save();
 
   let newUser = await userModel.create({
     name,
@@ -61,24 +71,67 @@ exports.logoutUser = asyncHandler(async (req, res) => {
 });
 
 exports.updateUserProfile = asyncHandler(async (req, res) => {
-  let user = await userModel.findById(req.user._id);
+  let userUpdate = await userModel.findOneAndUpdate(req.user._id, req.body, { new: true });
 
-  console.log(user);
+  // let user = await userModel.findById(req.user._id);
 
-  user.name = req.body.name || user.name;
-  user.email = req.body.email || user.email;
-  user.password = req.body.password || user.password;
-  user.role = req.body.role || user.role;
+  // user.name = req.body.name || user.name;
+  // user.email = req.body.email || user.email;
+  // user.password = req.body.password || user.password;
 
-  await user.save();
-  console.log(user);
-  res.status(200).json({ success: true, message: "user updated successfully", user });
+  //! assign new/updated value
+
+  // await user.save();
+  res.status(200).json({ success: true, message: "user updated successfully", userUpdate });
 });
 
-exports.deleteUserPicture = asyncHandler(async (req, res) => {});
+exports.updatePassword = asyncHandler(async (req, res) => {
+  let user = await userModel.findById(req.user._id);
+
+  user.password = req.body.password;
+
+  await user.save();
+
+  res.status(200).json({ success: true, message: "password updated successfully" });
+});
+
+exports.deleteUserPicture = asyncHandler(async (req, res) => {
+  let user = await userModel.findById(req.user._id);
+
+  let url = user.profilePicture;
+
+  let urlParts = url.split("/");
+
+  let public_id = urlParts[urlParts.length - 1].split(".")[0];
+
+  console.log(public_id);
+
+  let id = "taskify/" + public_id;
+
+  let deletedImage = await deleteFromCloudinary(id);
+  console.log(deletedImage);
+
+  user.profilePicture =
+    "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg";
+
+  await user.save();
+
+  res.status(200).json({ success: true, message: "profile picture deleted successfully" });
+});
 
 exports.getCurrentUser = asyncHandler(async (req, res) => {});
 
 exports.deleteUserProfile = asyncHandler(async (req, res) => {});
 
-exports.updateProfilePicture = asyncHandler(async (req, res) => {});
+exports.updateProfilePicture = asyncHandler(async (req, res) => {
+  let user = await userModel.findById(req.user._id);
+
+  let defaultURL = "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg";
+
+  if (user.profilePicture !== defaultURL) {
+  }
+
+  // req.file.path--> upload on cloudinary--> url
+});
+
+// https://res.cloudinary.com/dmqwvd39n/image/upload/v1742553298/taskify/zr8so72lymkfwkstxzfc.jpg

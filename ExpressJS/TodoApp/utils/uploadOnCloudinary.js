@@ -14,4 +14,12 @@ const uploadOnCloudinary = asyncHandler(async (localFilePath) => {
   return response;
 });
 
-module.exports = uploadOnCloudinary;
+const deleteFromCloudinary = asyncHandler(async (id) => {
+  let response = await v2.uploader.destroy(id);
+  console.log(response);
+  return response;
+});
+
+module.exports = { deleteFromCloudinary, uploadOnCloudinary };
+
+// https://res.cloudinary.com/dmqwvd39n/image/upload/v1742553550/taskify/zuforcqhhvlfawrtxbzx.jpg

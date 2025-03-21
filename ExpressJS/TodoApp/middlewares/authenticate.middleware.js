@@ -8,7 +8,7 @@ exports.authenticate = asyncHandler(async (req, res, next) => {
   //! checking the cookie
   let cookie = req?.cookies?.cookieName;
 
-  console.log(cookie);
+  // console.log(cookie);
 
   if (!cookie || cookie === null)
     throw new ErrorHandler(401, "PLease login to access this resource");
@@ -31,3 +31,6 @@ exports.authenticate = asyncHandler(async (req, res, next) => {
 // }
 
 /* decodedCookie==> { id: '67d15ef151d75d91fb5f8938', iat: 1742206174, exp:1742292574 } */
+
+// wrtw7eitvpzl2dwhpr3r
+// wrtw7eitvpzl2dwhpr3r

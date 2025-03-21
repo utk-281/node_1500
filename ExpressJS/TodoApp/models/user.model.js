@@ -20,6 +20,8 @@ const userSchema = new Schema(
     profilePicture: {
       type: String,
       default: "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg",
+      url: String,
+      public_id: String,
     },
     totalNumberOfTasks: {
       type: Number,
@@ -40,12 +42,13 @@ const userSchema = new Schema(
 //? pre hook
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
-    next();
+    return next();
   }
   let salt = await bcrypt.genSalt(12); // generating a random string of size 12
   let hashedPassword = await bcrypt.hash(this.password, salt); // hashing the password with the salt using has()
   this.password = hashedPassword;
   console.log(this.password); // store the hashed password in db
+  next();
 });
 
 //! if we want to add a method to the schema
@@ -59,3 +62,9 @@ userSchema.methods.verifyPassword = async function (enteredPassword) {
 module.exports = model("User", userSchema);
 
 //! connect mongodb with node
+
+//https://res.cloudinary.com/dmqwvd39n/image/upload/v1742467894/taskify/ppbo2g5wxzgwlsbpkpqb.png
+
+// ppbo2g5wxzgwlsbpkpqb
+
+// my name is something
