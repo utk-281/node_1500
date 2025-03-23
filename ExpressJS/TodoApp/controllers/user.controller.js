@@ -119,19 +119,43 @@ exports.deleteUserPicture = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, message: "profile picture deleted successfully" });
 });
 
-exports.getCurrentUser = asyncHandler(async (req, res) => {});
+exports.getCurrentUser = asyncHandler(async (req, res) => {
+  let user = await userModel.findById(req.user._id);
+  res.status(200).json({ success: true, data: user });
+});
 
 exports.deleteUserProfile = asyncHandler(async (req, res) => {});
 
 exports.updateProfilePicture = asyncHandler(async (req, res) => {
   let user = await userModel.findById(req.user._id);
+  let defaultPic = "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg";
 
-  let defaultURL = "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg";
+  if (user.profilePicture !== defaultPic) {
+    let url = user.profilePicture;
+    let urlParts = url.split("/");
 
-  if (user.profilePicture !== defaultURL) {
+    let public_id = urlParts[urlParts.length - 1].split(".")[0];
+    let id = "taskify/" + public_id;
+    await deleteFromCloudinary(id);
   }
+  let newLocalFilePath = req.file.path;
+  let uploadedResponse = await uploadOnCloudinary(newLocalFilePath);
+  user.profilePicture = uploadedResponse?.secure_url;
 
-  // req.file.path--> upload on cloudinary--> url
+  await user.save();
+
+  res.status(200).json({ success: true, message: "profile picture updated successfully" });
 });
 
 // https://res.cloudinary.com/dmqwvd39n/image/upload/v1742553298/taskify/zr8so72lymkfwkstxzfc.jpg
+
+// in user model store profile picture like this
+/* profilePicture:{
+   url: {
+      type:String
+    },
+    public_id:{
+      type:String
+    }
+
+} */
