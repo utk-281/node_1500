@@ -7,6 +7,7 @@ const {
   deleteUserPicture,
   updateProfilePicture,
   getCurrentUser,
+  deleteUserProfile,
 } = require("../controllers/user.controller");
 const upload = require("../middlewares/multer.middleware");
 const { authenticate } = require("../middlewares/authenticate.middleware");
@@ -29,5 +30,7 @@ router.patch(
 );
 
 router.get("/current-user", authenticate, getCurrentUser);
+
+router.delete("/delete-profile", authenticate, deleteUserProfile);
 
 module.exports = router;

@@ -12,6 +12,7 @@ const { rateLimiter } = require("./utils/rateLimiter");
 
 const userRoutes = require("./routes/user.routes");
 const todoRoutes = require("./routes/todo.routes");
+const adminRoutes = require("./routes/admin.routes");
 
 connectDB();
 
@@ -25,6 +26,7 @@ app.use(cookieParser());
 
 app.use("/v1/users", userRoutes);
 app.use("/v1/todos", todoRoutes);
+app.use("/v1/admin", adminRoutes);
 
 app.use(error);
 

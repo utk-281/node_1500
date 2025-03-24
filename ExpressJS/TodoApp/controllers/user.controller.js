@@ -3,6 +3,7 @@ const asyncHandler = require("express-async-handler");
 const ErrorHandler = require("../utils/errorHandler.utils");
 const { generateToken } = require("../utils/jwt.utils");
 const { uploadOnCloudinary, deleteFromCloudinary } = require("../utils/uploadOnCloudinary");
+const { extractPublicId } = require("../utils/extractPublicId.utils");
 
 exports.registerUser = asyncHandler(async (req, res) => {
   //! profilePicture ==> this is nor included in req.body
@@ -98,15 +99,7 @@ exports.updatePassword = asyncHandler(async (req, res) => {
 exports.deleteUserPicture = asyncHandler(async (req, res) => {
   let user = await userModel.findById(req.user._id);
 
-  let url = user.profilePicture;
-
-  let urlParts = url.split("/");
-
-  let public_id = urlParts[urlParts.length - 1].split(".")[0];
-
-  console.log(public_id);
-
-  let id = "taskify/" + public_id;
+  let id = extractPublicId(user.profilePicture);
 
   let deletedImage = await deleteFromCloudinary(id);
   console.log(deletedImage);
@@ -124,7 +117,22 @@ exports.getCurrentUser = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: user });
 });
 
-exports.deleteUserProfile = asyncHandler(async (req, res) => {});
+exports.deleteUserProfile = asyncHandler(async (req, res) => {
+  let user = await userModel.findById(req.user._id);
+  let defaultPicURL =
+    "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg";
+
+  if (user.profilePicture !== defaultPicURL) {
+    // deleteProfile pic
+    let id = extractPublicId(user.profilePicture);
+    await deleteFromCloudinary(id);
+  }
+
+  let deletedUser = await userModel.findByIdAndDelete(req.user._id);
+  if (!deletedUser) throw new ErrorHandler(404, "no user found");
+
+  res.status(200).json({ success: true, message: "user deleted successfully", deletedUser });
+});
 
 exports.updateProfilePicture = asyncHandler(async (req, res) => {
   let user = await userModel.findById(req.user._id);
