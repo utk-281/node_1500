@@ -25,9 +25,7 @@ exports.updateUserRole = asyncHandler(async (req, res) => {
   if (!user) throw new ErrorHandler(404, "no user found");
 
   user.role = req.body.role;
-
   await user.save();
-
   res.status(200).json({ success: true, message: "user role updated successfully", user });
 });
 

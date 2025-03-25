@@ -2,14 +2,25 @@ const todoModel = require("../models/todo.model");
 const asyncHandler = require("express-async-handler");
 const ErrorHandler = require("../utils/errorHandler.utils");
 const userModel = require("../models/user.model");
+const { parse, format } = require("date-fns");
 
 exports.addTodo = asyncHandler(async (req, res) => {
   let { title, description, dueDate, priority, status } = req.body;
 
+  console.log(req.body.dueDate); // --> string
+
+  // yyyy/mm/dd --> date comparison
+
+  // dueDate ==> dd/mm/yyyy
+  let parsedDate = parse(dueDate, "dd/MM/yyyy", new Date()); // input, format, reference
+
+  //! user will enter date in this format ==> dd/mm/yyyy
+  //! parse --> store in db yyyy/mm/dd
+
   let newTodo = await todoModel.create({
     title,
     description,
-    dueDate,
+    dueDate: parsedDate,
     priority,
     status,
     createdBy: req.user._id,
@@ -25,11 +36,20 @@ exports.addTodo = asyncHandler(async (req, res) => {
 });
 
 exports.fetchAllTodo = asyncHandler(async (req, res) => {
-  let todo = await todoModel.find({ createdBy: req.user._id });
+  let allTodo = await todoModel.find({ createdBy: req.user._id }); // _doc field
 
-  if (todo.length === 0) throw new ErrorHandler(404, "no todo found");
+  // [ {}, {}, {}, ..... ] --> allTodos : _doc
 
-  res.status(200).json({ success: true, count: todo.length, message: "todo fetched", todo });
+  let todos = allTodo.map((todo) => ({
+    ...todo._doc,
+    dueDate: format(todo.dueDate, "EEEE, dd MMMM yyyy"),
+    createdAt: format(todo.createdAt, "dd/MM/yyyy"),
+    updatedAt: format(todo.updatedAt, "dd/MM/yyyy"),
+  }));
+
+  if (allTodo.length === 0) throw new ErrorHandler(404, "no todo found");
+
+  res.status(200).json({ success: true, count: allTodo.length, message: "todo fetched", todos });
 });
 
 exports.fetchOneTodo = asyncHandler(async (req, res) => {
