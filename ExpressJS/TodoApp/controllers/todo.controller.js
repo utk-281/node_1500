@@ -36,7 +36,32 @@ exports.addTodo = asyncHandler(async (req, res) => {
 });
 
 exports.fetchAllTodo = asyncHandler(async (req, res) => {
-  let allTodo = await todoModel.find({ createdBy: req.user._id }); // _doc field
+  // let allTodo = await todoModel.find({ createdBy: req.user._id }); // _doc field
+
+  let filter = { createdBy: req.user._id };
+
+  if (req.query.status) {
+    filter.status = req.query.status; // ?status=true/false&
+  }
+
+  if (req.query.priority) {
+    filter.priority = req.query.priority; // ?priority=high/medium/low&status=true
+  }
+
+  let sortOption = {};
+  if (req.query.sort) {
+    const [field, value] = req.query.sort.split("_"); // ["dueDate", "asc"];
+    if (field === "dueDate" && (value === "asc" || value === "desc")) {
+      let order = value === "asc" ? 1 : -1;
+      sortOption[field] = order;
+    }
+  } // ?sort=dueDate_asc/dueDate_desc
+
+  console.log(filter);
+  console.log(sortOption);
+
+  // findOne({filter})
+  let allTodo = await todoModel.find(filter).sort(sortOption);
 
   // [ {}, {}, {}, ..... ] --> allTodos : _doc
 
@@ -88,3 +113,5 @@ exports.updateTodo = asyncHandler(async (req, res) => {
 
   res.status(200).json({ success: true, message: "todo updated successfully", updatedTodo });
 });
+
+// https://www.youtube.com/watch?v=_4CPp670fK4 ==> project
